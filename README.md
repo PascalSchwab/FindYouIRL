@@ -3,9 +3,9 @@ Project for you own geo guessing game for irl streaming
 
 ```yaml
 services:
-  findirl:
+  findyouirl:
     container_name: FindYouIrl
-    image: findyouirl:latest
+    image: ghcr.io/pascalschwab/findyouirl:main
     ports:
       - "5000:5000"
     environment:
