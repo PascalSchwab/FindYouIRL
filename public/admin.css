@@ -1,0 +1,40 @@
+body{
+    margin: 0;
+    padding: 0;
+    width: 100dvw;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    gap: 5px;
+}
+
+#url-container{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    opacity: 0;
+    transition: 0.2s opacity;
+    align-items: center;
+}
+
+    #url-container #url{
+        font-weight: bold;
+    }
+
+    #url-container button{
+
+    }
+
+#url-container.visible{
+    opacity: 1;
+}

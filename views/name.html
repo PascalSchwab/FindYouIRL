@@ -1,0 +1,15 @@
+<body>
+    <input type="text" placeholder="Name" id="name" />
+    <button onclick="saveName()">Save</button>
+    <script>
+        const nameInput = document.getElementById("name");
+        function saveName(){
+            setCookie("name", nameInput.value);
+            window.location.reload();
+        }
+
+        function setCookie(name,value) {
+            document.cookie = name + "=" + (value || "") + "; path=/";
+        }
+    </script>
+</body>

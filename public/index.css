@@ -1,0 +1,56 @@
+body{
+    margin: 0;
+    padding: 0;
+    width: 100dvw;
+    height: 100dvh;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#map{
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+}
+
+#popup{
+    --popup-height: 80px;
+    position: absolute;
+    bottom: calc(var(--popup-height) * -1);
+    left: 50%;
+    width: 200px;
+    height: var(--popup-height);
+    transform: translateX(-50%);
+    background-color: grey;
+    z-index: 1;
+    transition: 0.2s bottom;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+}
+
+#popup.visible{
+    bottom: 20px;
+}
+
+button{
+    width: 70px;
+    aspect-ratio: 1.6/1;
+}
+
+#time{
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130px;
+    height: 60px;
+    background-color: grey;
+    z-index: 1;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

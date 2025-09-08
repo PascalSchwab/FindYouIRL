@@ -1,0 +1,19 @@
+<head>
+    <link rel="stylesheet" href="admin.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+</head>
+<body>
+    <form id="startGame">
+        <label for="duration">Duration</label>
+        <div style="flex-direction: row; display: flex; justify-content: space-between;">
+            <input type="range" name="duration" min="1" max="10" oninput="this.nextElementSibling.innerText = this.value" />
+            <output></output>
+        </div>
+        <button type="submit">Start game</button>
+    </form>
+    <div id="url-container">
+        Url: <div id="url"></div>
+        <button onclick="copy()">Copy</button>
+    </div>
+    <script src="admin.js"></script>
+</body>
