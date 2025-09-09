@@ -55,7 +55,7 @@ function removeMarker(){
 
 function sendGuess(){
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", window.location.origin + "/guess", true);
+    xhr.open("POST", window.location.origin + "/game/guess?id=" + uuid, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.responseType = "json"
     xhr.onreadystatechange = function() {
@@ -70,9 +70,7 @@ function sendGuess(){
     };
     xhr.send(JSON.stringify({
         lat: marker.getLatLng().lat,
-        lng: marker.getLatLng().lng,
-        id: uuid,
-        name: getCookie("name")
+        lng: marker.getLatLng().lng
     }));
 }
 
@@ -96,9 +94,8 @@ async function startTimer(){
 function getGameData() {
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", window.location.origin + "/game?id=" + uuid, true);
+        xhr.open("GET", window.location.origin + "/game/info/time?id=" + uuid, true);
         xhr.responseType = "json";
-
         xhr.onload = function() {
             if (xhr.status === 200) {
                 resolve(xhr.response);
@@ -106,11 +103,9 @@ function getGameData() {
                 reject(new Error("Error: " + xhr.status));
             }
         };
-
         xhr.onerror = function() {
             reject(new Error("Network error"));
         };
-
         xhr.send();
     });
 }

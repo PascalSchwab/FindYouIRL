@@ -1,14 +1,23 @@
 <head>
+    <link rel="stylesheet" href="index.css" />
     <link rel="stylesheet" href="admin.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 </head>
 <body>
+    <div id="game-container">
+        <h1>Game</h1>
+        <div id="scoreboard">
+
+        </div>
+    </div>
     <form id="startGame">
         <label for="duration">Duration</label>
         <div style="flex-direction: row; display: flex; justify-content: space-between;">
             <input type="range" name="duration" min="1" max="10" oninput="this.nextElementSibling.innerText = this.value" />
             <output></output>
         </div>
+        <label for="image">Image</label>
+        <input type="file" name="image" accept="image/*" />
         <button type="submit">Start game</button>
     </form>
     <div id="url-container">
@@ -16,4 +25,5 @@
         <button onclick="copy()">Copy</button>
     </div>
     <script src="admin.js"></script>
+    <script src="geo.js"></script>
 </body>

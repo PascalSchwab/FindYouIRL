@@ -1,6 +1,14 @@
+<head>
+    <link rel="stylesheet" href="index.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="name.css" />
+</head>
 <body>
-    <input type="text" placeholder="Name" id="name" />
-    <button onclick="saveName()">Save</button>
+    <div id="name-container">
+        <h1>What's your name?</h1>
+        <input type="text" placeholder="Name" id="name" />
+        <button onclick="saveName()">Save</button>
+    </div>
     <script>
         const nameInput = document.getElementById("name");
         function saveName(){
