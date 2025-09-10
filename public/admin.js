@@ -7,36 +7,19 @@ updateList();
 
 form.addEventListener("submit", async function(event) {
     event.preventDefault();
-    try {
-        const duration = form.duration.value;
-        // TODO: Read file, save
-        //const image = form.image.files[0];
-        const position = await getCurrentPosition();
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", window.location.origin + "/game/create?password=" + password, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.responseType = "json"
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200 || xhr.status === 201) {
-                    urlText.innerText=xhr.response.url;
-                    urlContainer.classList.add("visible");
-                } 
-                else {
-                    console.error("Error:", xhr.status, xhr.statusText);
-                }
-            }
-        };
-        xhr.send(JSON.stringify({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-            duration: duration,
-            image: image
-        }));
-    } catch (err) {
-        console.error("Error:", err);
-    }
+    const duration = form.duration.value;
+    // const image = form.image.files[0];
+    const position = await getCurrentPosition();
+    postRequest(window.location.origin + "/game/create?password=" + password, {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+        duration: duration
+    }).then((response)=>{
+        if(response.status === 200){
+            urlText.innerText=response.data.url;
+            urlContainer.classList.add("visible");
+        }
+    });
 });
 
 function copy(){
@@ -44,21 +27,12 @@ function copy(){
 }
 
 function updateList(){
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", window.location.origin + "/game/info/scoreboard?password=" + password, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.responseType = "json"
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200 || xhr.status === 201) {
-                changeScoreboardList(xhr.response.scoreboard);
-            } 
-            else {
-                console.error("Error:", xhr.status, xhr.statusText);
-            }
+    getRequest(window.location.origin + "/game/info/scoreboard?password=" + password)
+    .then((response)=>{
+        if(response.status === 200){
+            changeScoreboardList(response.data.scoreboard);
         }
-    };
-    xhr.send();
+    });
 }
 
 function changeScoreboardList(scoreboard){

@@ -6,7 +6,8 @@ const ejs = require("ejs");
 const app = express();
 const port = 5000;
 const gameModule = require("./game")
-const authMiddleware = require("./auth");
+const authMiddleware = require("./others/auth");
+const gameHistory = require("./gameHistory").gameHistory;
 
 app.engine("html", ejs.renderFile);
 app.set("view engine", "html");
@@ -19,7 +20,7 @@ app.use('/', gameModule.router)
 
 /* ENDPOINTS */
 
-app.get("/", (req, res) => {
+app.get("/", checkIdMiddleware, (req, res) => {
     if (req.cookies.name) {
         res.render("map.html");
     } 
@@ -32,6 +33,12 @@ app.get('/admin', authMiddleware, function (req, res)
 {
     res.render('admin.html');
 });
+
+function checkIdMiddleware(req, res, next){
+    let id = req.query.id;
+    if(id && gameHistory.currentGame === id) return next();
+    return res.sendStatus(400);
+}
 
 app.listen(port, function () {
     console.log('Webserver läuft und hört auf Port %d', port);

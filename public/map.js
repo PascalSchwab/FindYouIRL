@@ -7,10 +7,18 @@ const map = L.map('map', {
     maxBounds: [[48.81, 11.73], [49.21, 12.47]],
     maxBoundsViscosity: 0.8
 });
+const MarkerIcon = L.Icon.extend({
+    options: {
+        iconSize:     [41, 41],
+        iconAnchor:   [20.5, 41]
+    }
+});
+var redMarkerIcon = new MarkerIcon({iconUrl: 'images/red-marker.png'});
 var marker = null;
 const popup = document.getElementById("popup");
 const uuid = new URLSearchParams(window.location.search).get("id");
 const timeContainer = document.getElementById("time");
+let timer = null;
 let gameData = null;
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -23,7 +31,8 @@ startTimer();
 */
 
 function onMapClicked(e) {
-    var geojsonFeature = {
+    if(gameData.guessed) return;
+    let geojsonFeature = {
         "type": "Feature",
         "properties": {},
         "geometry": {
@@ -40,7 +49,6 @@ function onMapClicked(e) {
                 title: "Your Guess",
                 riseOnHover: true
             });
-
             return marker;
         }
     }).addTo(map);
@@ -54,30 +62,35 @@ function removeMarker(){
 }
 
 function sendGuess(){
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", window.location.origin + "/game/guess?id=" + uuid, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.responseType = "json"
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200 || xhr.status === 201) {
-                console.log("Server response:", xhr.response);
-            } 
-            else {
-                console.error("Error:", xhr.status, xhr.statusText);
-            }
-        }
-    };
-    xhr.send(JSON.stringify({
+    postRequest(window.location.origin + "/game/guess?id=" + uuid, {
         lat: marker.getLatLng().lat,
         lng: marker.getLatLng().lng
-    }));
+    }).then((response)=>{
+        if(response.status === 200){
+            setMarker(response.data.lat, response.data.lng, "Our position", redMarkerIcon);
+            gameData.guessed = true;
+            popup.classList.remove("visible");
+            clearInterval(timer);
+            timeContainer.innerText = "Distance: " + Math.round(response.data.distance) + "m";
+        }
+    });
 }
 
 async function startTimer(){
-    gameData = await getGameData();
+    gameData = await getRequest(window.location.origin + "/game/info?id=" + uuid).then((response)=>{
+        if(response.status === 200){
+            return response.data;
+        }
+    });
+    if(gameData == null) return;
+    if(gameData.guessed){
+        timeContainer.innerText = "Distance: " + Math.round(gameData.distance) + "m";
+        setMarker(gameData.guess.lat, gameData.guess.lng, "Your Guess");
+        setMarker(gameData.target.lat, gameData.target.lng, "Our position", redMarkerIcon);
+        return;
+    }
     let remaining = (gameData.duration - (Date.now() - gameData.time)) / 1000
-    const timerId = setInterval(update, 1000);
+    timer = setInterval(update, 1000);
     function update() {
         let minutes = Math.floor(remaining / 60);
         let seconds = ((remaining % 60)).toFixed(0);
@@ -85,29 +98,31 @@ async function startTimer(){
         if (remaining > 0) {
             remaining--;
         } else {
-            clearInterval(timerId);
-            timeContainer.innerText = "Spiel beendet!";
+            clearInterval(timer);
+            timeContainer.innerText = "Game over!";
         }
     }
 }
 
-function getGameData() {
-    return new Promise((resolve, reject) => {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", window.location.origin + "/game/info/time?id=" + uuid, true);
-        xhr.responseType = "json";
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                resolve(xhr.response);
-            } else {
-                reject(new Error("Error: " + xhr.status));
-            }
-        };
-        xhr.onerror = function() {
-            reject(new Error("Network error"));
-        };
-        xhr.send();
-    });
+function setMarker(lat, lng, text, icon){
+    let geojsonFeature = {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+                "type": "Point",
+                "coordinates": [lat, lng]
+        }
+    }
+
+    L.geoJson(geojsonFeature, {
+        pointToLayer: () => {
+            return L.marker({lat:lat, lng:lng}, {
+                title: text,
+                riseOnHover: true,
+                icon: icon ?? new L.Icon.Default()
+            });
+        }
+    }).addTo(map);
 }
 
 function getCookie(cname) {

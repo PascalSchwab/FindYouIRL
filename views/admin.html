@@ -13,17 +13,18 @@
     <form id="startGame">
         <label for="duration">Duration</label>
         <div style="flex-direction: row; display: flex; justify-content: space-between;">
-            <input type="range" name="duration" min="1" max="10" oninput="this.nextElementSibling.innerText = this.value" />
+            <input type="range" name="duration" min="1" max="10" required oninput="this.nextElementSibling.innerText = this.value" />
             <output></output>
         </div>
-        <label for="image">Image</label>
-        <input type="file" name="image" accept="image/*" />
+        <!--<label for="image">Image</label>
+        <input type="file" required name="image" accept="image/*" />-->
         <button type="submit">Start game</button>
     </form>
     <div id="url-container">
         Url: <div id="url"></div>
         <button onclick="copy()">Copy</button>
     </div>
+    <script src="api.js"></script>
     <script src="admin.js"></script>
     <script src="geo.js"></script>
 </body>

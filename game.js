@@ -1,8 +1,8 @@
 const router = require('express').Router()
-const authMiddleware = require("./auth");
-const twitch = require("./twitch");
+const authMiddleware = require("./others/auth");
+const twitch = require("./others/twitch");
 const gameHistory = require("./gameHistory").gameHistory;
-const globe = require("./globe");
+const globe = require("./others/globe");
 
 /* ENDPOINTS */
 
@@ -20,9 +20,17 @@ router.post("/game/create", authMiddleware, (req, res) => {
     res.json({url: url});
 });
 
-router.get("/game/info/time", checkIdMiddleware, (req, res) => {
+router.get("/game/info", checkIdMiddleware, (req, res) => {
     let game = gameHistory.history[req.query.id];
-    res.json({id: game.id, time: game.time, duration: game.duration});
+    let ip = req.socket.remoteAddress;
+    if(!game.guesses[ip]){
+        return res.json({id: game.id, time: game.time, duration: game.duration, guessed: false, distance: 0, guess: {lat: 0, lng: 0}, target: {lat: 0, lng: 0}});
+    }
+    let distance = game.guesses[ip].distance;
+    let guessed = true;
+    let guess = {lat: game.guesses[ip].coord.lat, lng: game.guesses[ip].coord.lng};
+    let target = {lat: gane.coord.lat, lng: game.coord.lng};
+    res.json({id: game.id, time: game.time, duration: game.duration, guessed: guessed, distance: distance, guess: guess, target: target});
 });
 
 router.get("/game/info/scoreboard", authMiddleware, (req, res) => {
