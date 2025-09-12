@@ -68,6 +68,12 @@ function sendGuess(){
     }).then((response)=>{
         if(response.status === 200){
             setMarker(response.data.lat, response.data.lng, "Our position", redMarkerIcon);
+            L.polyline([{lat: response.data.lat, lng: response.data.lng}, marker.getLatLng()], {
+                color: '#9e2020ff',
+                weight: 4,
+                opacity: 0.95,
+                dashArray: '0'
+            }).addTo(map);
             gameData.guessed = true;
             popup.classList.remove("visible");
             clearInterval(timer);
@@ -87,6 +93,12 @@ async function startTimer(){
         timeContainer.innerText = "Distance: " + Math.round(gameData.distance) + "m";
         setMarker(gameData.guess.lat, gameData.guess.lng, "Your Guess");
         setMarker(gameData.target.lat, gameData.target.lng, "Our position", redMarkerIcon);
+        L.polyline([{lat: gameData.guess.lat, lng: gameData.guess.lng}, {lat: gameData.target.lat, lng: gameData.target.lng}], {
+            color: '#9e2020ff',
+            weight: 4,
+            opacity: 0.95,
+            dashArray: '0'
+        }).addTo(map);
         return;
     }
     let remaining = (gameData.duration - (Date.now() - gameData.time)) / 1000

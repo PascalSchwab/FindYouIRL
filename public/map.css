@@ -4,44 +4,90 @@
     z-index: 0;
 }
 
-#popup{
+#popup {
     --popup-height: 80px;
     position: absolute;
     bottom: calc(var(--popup-height) * -1);
     left: 50%;
-    width: 200px;
+    width: 240px;
     height: var(--popup-height);
     transform: translateX(-50%);
-    background-color: grey;
-    z-index: 1;
-    transition: 0.2s bottom;
+    
+    /* Glassmorphism style */
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
     display: flex;
     align-items: center;
-    flex-direction: row;
     justify-content: center;
     gap: 20px;
+
+    z-index: 10;
+    transition: bottom 0.3s ease;
 }
 
 #popup.visible{
     bottom: 20px;
 }
 
-button{
-    width: 70px;
+#popup button {
+    width: 90px;
+    height: 40px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
 }
 
-#time{
+/* Delete button = Rot */
+#popup button:first-child {
+    background: linear-gradient(135deg, #d62828, #b22222);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(214, 40, 40, 0.4);
+}
+#popup button:first-child:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(214, 40, 40, 0.6);
+}
+
+/* Send button = Dunkelgrün */
+#popup button:last-child {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    color: #f1f1f1;
+    box-shadow: 0 4px 12px rgba(33, 136, 56, 0.4);
+}
+#popup button:last-child:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(33, 136, 56, 0.6);
+}
+
+#time {
     position: absolute;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 15px;
-    min-width: 100px;
-    width: fit-content;
-    height: 30px;
-    background-color: grey;
-    z-index: 1;
-    font-weight: bold;
+    padding: 12px 25px;
+    min-width: 120px;
+
+    background: rgba(0, 0, 0, 0.5);   /* Darker glass */
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    color: #fff;                      /* Bright text */
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);  /* Glow for visibility */
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+
     display: flex;
     justify-content: center;
     align-items: center;
