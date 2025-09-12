@@ -22,7 +22,7 @@ router.post("/game/create", authMiddleware, (req, res) => {
 
 router.get("/game/info", checkIdMiddleware, (req, res) => {
     let game = gameHistory.history[req.query.id];
-    let ip = req.ip;
+    let ip = req.socket.remoteAddress;
     if(!game.guesses[ip]){
         return res.json({id: game.id, time: game.time, duration: game.duration, guessed: false, distance: 0, guess: {lat: 0, lng: 0}, target: {lat: 0, lng: 0}, channel: process.env.CHANNEL_NAME});
     }
@@ -58,7 +58,7 @@ router.post("/game/guess", checkIdMiddleware, checkIPv4Middleware, checkTimeMidd
     let game = gameHistory.history[req.query.id];
     let coord = {lat: req.body.lat, lng: req.body.lng};
     let name = req.cookies.name;
-    let ip = req.ip;
+    let ip = req.socket.remoteAddress;
     let distance = globe.getDistance(game.coord, coord);
     game.guesses[ip] = new Guess(coord, name, ip, distance);
     gameHistory.save();
@@ -75,7 +75,7 @@ function checkIdMiddleware(req, res, next){
 
 function checkIPv4Middleware(req, res, next){
     let game = gameHistory.history[req.query.id];
-    let ip = req.ip;
+    let ip = req.socket.remoteAddress;
     if(game.guesses[ip] == null) return next();
     return res.sendStatus(400);
 }
