@@ -85,6 +85,9 @@ function sendGuess(){
 async function startTimer(){
     gameData = await getRequest(window.location.origin + "/game/info?id=" + uuid).then((response)=>{
         if(response.status === 200){
+            // Iframe
+            const twitchPlayer = document.getElementById("twitchPlayer");
+            twitchPlayer.src = `https://player.twitch.tv/?channel=${response.data.channel}&parent=${window.location.hostname}`;
             return response.data;
         }
     });

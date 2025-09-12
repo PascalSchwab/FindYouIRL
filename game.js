@@ -24,13 +24,14 @@ router.get("/game/info", checkIdMiddleware, (req, res) => {
     let game = gameHistory.history[req.query.id];
     let ip = req.ip;
     if(!game.guesses[ip]){
-        return res.json({id: game.id, time: game.time, duration: game.duration, guessed: false, distance: 0, guess: {lat: 0, lng: 0}, target: {lat: 0, lng: 0}});
+        return res.json({id: game.id, time: game.time, duration: game.duration, guessed: false, distance: 0, guess: {lat: 0, lng: 0}, target: {lat: 0, lng: 0}, channel: process.env.CHANNEL_NAME});
     }
     let distance = game.guesses[ip].distance;
     let guessed = true;
     let guess = {lat: game.guesses[ip].coord.lat, lng: game.guesses[ip].coord.lng};
     let target = {lat: game.coord.lat, lng: game.coord.lng};
-    res.json({id: game.id, time: game.time, duration: game.duration, guessed: guessed, distance: distance, guess: guess, target: target});
+    console.log(process.env)
+    res.json({id: game.id, time: game.time, duration: game.duration, guessed: guessed, distance: distance, guess: guess, target: target, channel: process.env.CHANNEL_NAME});
 });
 
 router.get("/game/info/scoreboard", authMiddleware, (req, res) => {
