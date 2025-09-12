@@ -112,3 +112,17 @@
   height: 100%;
   border: none;
 }
+
+/* Move player to bottom if screen width < 1050px */
+@media (max-width: 1050px) {
+  #twitch-container {
+    top: auto;       /* remove top */
+    bottom: 20px;    /* position at bottom */
+    left: 50%;     /* keep right */
+    transform: translateX(-50%);
+  }
+
+  #popup.visible{
+    bottom: 200px;
+    }
+}
