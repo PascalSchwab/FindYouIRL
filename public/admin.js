@@ -30,16 +30,23 @@ function updateList(){
     getRequest(window.location.origin + "/game/info/scoreboard?password=" + password)
     .then((response)=>{
         if(response.status === 200){
-            changeScoreboardList(response.data.scoreboard);
+            changeScoreboardList(response.data.scoreboard, response.data.finished);
         }
     });
 }
 
-function changeScoreboardList(scoreboard){
+function changeScoreboardList(scoreboard, finished){
     let content = '<ol>';
     scoreboard.forEach((player) => {
         content += '<li>' + player.name + " | " + Math.round(player.distance) + '</li>'
     });
     content += '</ol>';
+    if(finished){
+        content += '<button onclick="showResult()">Show result</button>';
+    }
     document.getElementById("scoreboard").innerHTML = content;
+}
+
+function showResult(){
+    getRequest(window.location.origin + "/game/show/scoreboard?password=" + password);
 }

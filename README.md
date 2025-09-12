@@ -13,4 +13,5 @@ services:
       - CHANNEL_NAME=name
       - ACCESS_TOKEN=12345
       - CHANNEL_LIST=name1,name2
+      - CLIENT_ID=1234
 ```

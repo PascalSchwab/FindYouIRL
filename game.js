@@ -29,7 +29,7 @@ router.get("/game/info", checkIdMiddleware, (req, res) => {
     let distance = game.guesses[ip].distance;
     let guessed = true;
     let guess = {lat: game.guesses[ip].coord.lat, lng: game.guesses[ip].coord.lng};
-    let target = {lat: gane.coord.lat, lng: game.coord.lng};
+    let target = {lat: game.coord.lat, lng: game.coord.lng};
     res.json({id: game.id, time: game.time, duration: game.duration, guessed: guessed, distance: distance, guess: guess, target: target});
 });
 
@@ -37,7 +37,20 @@ router.get("/game/info/scoreboard", authMiddleware, (req, res) => {
     let game = gameHistory.history[gameHistory.currentGame];
     if(!game) return res.sendStatus(204);
     let sortedGuesses = Object.values(game.guesses).sort((a, b) => a.distance - b.distance).map(g => ({ name: g.name, distance: g.distance }));
-    res.json({scoreboard: sortedGuesses});
+    res.json({scoreboard: sortedGuesses, finished: (game.duration - (Date.now() - game.time)) <= 0});
+});
+
+router.get("/game/show/scoreboard", authMiddleware, (req, res) => {
+    let game = gameHistory.history[gameHistory.currentGame];
+    if(!game) return res.sendStatus(204);
+    let sortedGuesses = Object.values(game.guesses)
+        .sort((a, b) => a.distance - b.distance)
+        .map((g, i) => `${i + 1}. ${g.name} (${Math.round(g.distance)}m)`);
+    const result = "Ergebnisse: " + sortedGuesses.join(" | ");
+    process.env.CHANNEL_LIST.split(",").forEach((channel)=>{
+        twitch.say(channel, result);
+    });
+    res.sendStatus(200);
 });
 
 router.post("/game/guess", checkIdMiddleware, checkIPv4Middleware, checkTimeMiddleware, (req, res) => {
