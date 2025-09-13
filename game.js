@@ -20,17 +20,16 @@ router.post("/game/create", authMiddleware, (req, res) => {
     res.json({url: url});
 });
 
-router.get("/game/info", checkIdMiddleware, (req, res) => {
+router.get("/game/info", checkIdMiddleware, checkNameMiddleware, (req, res) => {
     let game = gameHistory.history[req.query.id];
-    let ip = req.socket.remoteAddress;
-    if(!game.guesses[ip]){
+    let name = req.cookies.name;
+    if(!game.guesses[name]){
         return res.json({id: game.id, time: game.time, duration: game.duration, guessed: false, distance: 0, guess: {lat: 0, lng: 0}, target: {lat: 0, lng: 0}, channel: process.env.CHANNEL_NAME});
     }
-    let distance = game.guesses[ip].distance;
+    let distance = game.guesses[name].distance;
     let guessed = true;
-    let guess = {lat: game.guesses[ip].coord.lat, lng: game.guesses[ip].coord.lng};
+    let guess = {lat: game.guesses[name].coord.lat, lng: game.guesses[name].coord.lng};
     let target = {lat: game.coord.lat, lng: game.coord.lng};
-    console.log(process.env)
     res.json({id: game.id, time: game.time, duration: game.duration, guessed: guessed, distance: distance, guess: guess, target: target, channel: process.env.CHANNEL_NAME});
 });
 
@@ -54,13 +53,21 @@ router.get("/game/show/scoreboard", authMiddleware, (req, res) => {
     res.sendStatus(200);
 });
 
-router.post("/game/guess", checkIdMiddleware, checkIPv4Middleware, checkTimeMiddleware, (req, res) => {
+router.get("/game/guess/check", checkIdMiddleware, checkTimeMiddleware, (req, res) => {
+    let game = gameHistory.history[req.query.id];
+    let name = req.query.name;
+    if(name && game.guesses[name] == null){
+        return res.sendStatus(200);
+    }
+    return res.sendStatus(400);
+});
+
+router.post("/game/guess", checkIdMiddleware, checkNameMiddleware, checkTimeMiddleware, (req, res) => {
     let game = gameHistory.history[req.query.id];
     let coord = {lat: req.body.lat, lng: req.body.lng};
     let name = req.cookies.name;
-    let ip = req.socket.remoteAddress;
     let distance = globe.getDistance(game.coord, coord);
-    game.guesses[ip] = new Guess(coord, name, ip, distance);
+    game.guesses[name] = new Guess(coord, name, distance);
     gameHistory.save();
     res.json({lat: game.coord.lat, lng: game.coord.lng, distance: distance});
 });
@@ -73,16 +80,15 @@ function checkIdMiddleware(req, res, next){
     return res.sendStatus(400);
 }
 
-function checkIPv4Middleware(req, res, next){
-    let game = gameHistory.history[req.query.id];
-    let ip = req.socket.remoteAddress;
-    if(game.guesses[ip] == null) return next();
-    return res.sendStatus(400);
-}
-
 function checkTimeMiddleware(req, res, next){
     let game = gameHistory.history[req.query.id];
     if((Date.now() - game.time) < game.duration) return next();
+    return res.sendStatus(400);
+}
+
+function checkNameMiddleware(req, res, next){
+    let name = req.cookies.name;
+    if(name) return next();
     return res.sendStatus(400);
 }
 
@@ -99,10 +105,9 @@ class Game{
 }
 
 class Guess{
-    constructor(coord, name, ip, distance){
+    constructor(coord, name, distance){
         this.coord = coord;
         this.name = name;
-        this.ip = ip;
         this.distance = distance
     }
 }

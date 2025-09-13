@@ -7,3 +7,7 @@
     align-items: center;
     gap: 20px;
 }
+
+#error{
+    color: rgb(165, 0, 0);
+}

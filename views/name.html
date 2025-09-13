@@ -7,17 +7,28 @@
     <div id="name-container">
         <h1>What's your name?</h1>
         <input type="text" placeholder="Name" id="name" />
+        <div id="error"></div>
         <button onclick="saveName()">Save</button>
     </div>
     <script>
         const nameInput = document.getElementById("name");
+        const error = document.getElementById("error");
+        const uuid = new URLSearchParams(window.location.search).get("id");
         function saveName(){
-            setCookie("name", nameInput.value);
-            window.location.reload();
+            getRequest(window.location.origin + "/game/guess/check?id=" + uuid + "&name=" + nameInput.value).then((response)=>{
+                if(response.status === 200){
+                    setCookie("name", nameInput.value);
+                    window.location.reload();     
+                }
+                else{
+                    error.innerHTML = "Name is already used";
+                }
+            });
         }
 
         function setCookie(name,value) {
             document.cookie = name + "=" + (value || "") + "; path=/";
         }
     </script>
+    <script src="api.js"></script>
 </body>
