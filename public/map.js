@@ -1,10 +1,9 @@
 const coord = [49.01525, 12.10175];
 const map = L.map('map', {
     center: coord,
-    zoom: 12,
-    minZoom: 12,
+    zoom: 6,
+    minZoom: 6,
     maxZoom: 18,
-    maxBounds: [[48.81, 11.73], [49.21, 12.47]],
     maxBoundsViscosity: 0.8
 });
 const MarkerIcon = L.Icon.extend({
